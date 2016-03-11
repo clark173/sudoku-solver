@@ -9,6 +9,17 @@ VALID_NUMS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 def get_initial_values(puzzle):
     print 'Enter the values by row. Seperate values by comma. For empty cells, input a 0.'
 
+    puzzle.data_array[0] = [0,0,6,8,0,0,5,0,0]
+    puzzle.data_array[1] = [0,8,0,0,6,1,0,2,0]
+    puzzle.data_array[2] = [5,0,0,0,3,0,0,0,7]
+    puzzle.data_array[3] = [0,4,0,3,1,7,0,0,5]
+    puzzle.data_array[4] = [0,9,8,4,0,6,3,7,0]
+    puzzle.data_array[5] = [7,0,0,2,9,8,0,4,0]
+    puzzle.data_array[6] = [8,0,0,0,4,0,0,0,9]
+    puzzle.data_array[7] = [0,3,0,6,2,0,0,1,0]
+    puzzle.data_array[8] = [0,0,5,0,0,9,6,0,0]
+    return
+
     for i in range(0,9):
         while True:
             break_statement = False
@@ -40,6 +51,7 @@ def main():
         puzzle.populate_grids()
         grids_updated = puzzle.check_grids()
         columns_updated = puzzle.check_columns()
+        tri_updated = puzzle.check_horizontal_tri_grid()
 
         solved = True
         for row in puzzle.data_array:
@@ -49,7 +61,7 @@ def main():
         if solved:
             print 'Solution Found'
             break
-        if not rows_updated and not grids_updated:
+        if not rows_updated and not grids_updated and not columns_updated:
             print 'No changes made this iteration - No solution found'
             break
         i += 1

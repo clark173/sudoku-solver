@@ -4,15 +4,6 @@ class Puzzle:
     def __init__(self):
         self.data_array = [[0 for x in range(0,9)] for x in range(0,9)]
         self.grids = [[[0 for x in range(0,3)] for x in range(0,3)] for x in range(0,9)]
-        self.grid_0 = [[0 for x in range(0,3)] for x in range(0,3)]
-        self.grid_1 = [[0 for x in range(0,3)] for x in range(0,3)]
-        self.grid_2 = [[0 for x in range(0,3)] for x in range(0,3)]
-        self.grid_3 = [[0 for x in range(0,3)] for x in range(0,3)]
-        self.grid_4 = [[0 for x in range(0,3)] for x in range(0,3)]
-        self.grid_5 = [[0 for x in range(0,3)] for x in range(0,3)]
-        self.grid_6 = [[0 for x in range(0,3)] for x in range(0,3)]
-        self.grid_7 = [[0 for x in range(0,3)] for x in range(0,3)]
-        self.grid_8 = [[0 for x in range(0,3)] for x in range(0,3)]
         self.populate_grids()
 
     def print_board(self):
@@ -42,6 +33,9 @@ class Puzzle:
         for i in range(len(self.data_array)):
             self.data_array[i][num] = column[i]
 
+    def update_array_after_row(self, row, num):
+        self.data_array[num] = row
+
     def check_grids(self):
         updated = False
 
@@ -58,6 +52,98 @@ class Puzzle:
                 grid[2] = grid_array[6:9]
                 updated = True
         self.update_array_after_grids()
+        return updated
+
+    def check_horizontal_tri_grid(self):
+        updated = False
+
+        for section_num in range(0,3):
+            for num in VALID_NUMS:
+                tri_row_count = 0
+                not_row = 0
+                empty_row = 0
+                column1 = None
+                column2 = None
+                column3 = None
+
+                grid_found = []
+                for i in range(0 + (section_num * 3), 3 + (section_num * 3)):
+                    if num in self.data_array[i]:
+                        tri_row_count += 1
+                        not_row = i
+                        grid_num = int(i/3) * 3 + self.data_array[i].index(num) / 3
+                        grid_found.append(grid_num)
+                    else:
+                        empty_row = i
+
+                if tri_row_count == 2:
+                    actual_grid = 0
+                    for i in range(0 + (section_num * 3), 3 + (section_num * 3)):
+                        if i not in grid_found:
+                            actual_grid = i
+                            break
+
+                    if actual_grid == 0 or actual_grid == 3 or actual_grid == 6:
+                        row_num = 0
+                        column1 = [row[0] for row in self.data_array]
+                        column2 = [row[1] for row in self.data_array]
+                        column3 = [row[2] for row in self.data_array]
+                    elif actual_grid == 1 or actual_grid == 4 or actual_grid == 7:
+                        row_num = 3
+                        column1 = [row[3] for row in self.data_array]
+                        column2 = [row[4] for row in self.data_array]
+                        column3 = [row[5] for row in self.data_array]
+                    elif actual_grid == 2 or actual_grid == 5 or actual_grid == 8:
+                        row_num = 6
+                        column1 = [row[6] for row in self.data_array]
+                        column2 = [row[7] for row in self.data_array]
+                        column3 = [row[8] for row in self.data_array]
+
+                    num_open = 0
+                    open_indeces = []
+                    i = 0
+
+                    for value in self.grids[actual_grid][empty_row % 3]:
+                        if value == 0:
+                            num_open += 1
+                            open_indeces.append(i)
+                        i += 1
+
+                    if num_open == 3:
+                        if num in column1 and num in column2:
+                            column3[empty_row] = num
+                        elif num in column1 and num in column3:
+                            column2[empty_row] = num
+                        elif num in column2 and num in column3:
+                            column1[empty_row] = num
+                    elif num_open == 2:
+                        if column1[empty_row] == 0 and column2[empty_row] == 0:
+                            if num in column1:
+                                column2[empty_row] = num
+                            elif num in column2:
+                                column1[empty_row] = num
+                        elif column1[empty_row] == 0 and column3[empty_row] == 0:
+                            if num in column1:
+                                column3[empty_row] = num
+                            elif num in column3:
+                                column1[empty_row] = num
+                        elif column2[empty_row] == 0 and column3[empty_row] == 0:
+                            if num in column2:
+                                column3[empty_row] = num
+                            elif num in column3:
+                                column2[empty_row] = num
+                    elif num_open == 1:
+                        if num not in column1:
+                            column1[empty_row] = num
+                        elif num not in column2:
+                            column2[empty_row] = num
+                        elif num not in column3:
+                            column3[empty_row] = num
+                if column1:
+                    self.update_array_after_columns(column1, row_num)
+                    self.update_array_after_columns(column2, row_num + 1)
+                    self.update_array_after_columns(column3, row_num + 2)
+                    updated = True
         return updated
 
     def check_columns(self):
@@ -116,7 +202,7 @@ class Puzzle:
             num_empty = 0
 
             for i in range(0,3):
-                if self.grids[grid_num][row_num][i] == 0:
+                if self.grids[grid_num][grid_row][i] == 0:
                     num_empty += 1
 
             if num_empty == 1:
@@ -165,7 +251,7 @@ class Puzzle:
             elif row_count < 8:
                 for j in range(len(row)):
                     if row[j] == 0:
-                        grid_num = int(j / 3) * 3 + int(i / 3)
+                        grid_num = int(i / 3) * 3 + int(j / 3)
                         self.row_grid_compare(row, grid_num, i, j)
                         self.update_array_after_row(row, i)
             i += 1
