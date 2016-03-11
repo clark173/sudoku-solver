@@ -36,7 +36,7 @@ class Puzzle:
         self.data_array[5] = self.grids[3][2] + self.grids[4][2] + self.grids[5][2]
         self.data_array[6] = self.grids[6][0] + self.grids[7][0] + self.grids[8][0]
         self.data_array[7] = self.grids[6][1] + self.grids[7][1] + self.grids[8][1]
-        self.data_array[8] = self.grids[6][1] + self.grids[7][2] + self.grids[8][2]
+        self.data_array[8] = self.grids[6][2] + self.grids[7][2] + self.grids[8][2]
 
     def update_array_after_columns(self, column, num):
         for i in range(len(self.data_array)):
