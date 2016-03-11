@@ -146,6 +146,97 @@ class Puzzle:
                     updated = True
         return updated
 
+    def check_vertical_tri_grid(self):
+        for section_num in range(0,3):
+            for num in VALID_NUMS:
+                tri_col_count = 0
+                not_col = 0
+                empty_col = 0
+                row1 = None
+                row2 = None
+                row3 = None
+
+                grid_found = []
+                for i in range(0 + (section_num * 3), 3 + (section_num * 3)):
+                    if num in self.data_array[i]:
+                        tri_col_count += 1
+                        not_col = i
+                        grid_num = int(i/3) + self.data_array[i].index(num) / 3
+                        grid_found.append(grid_num)
+                    else:
+                        empty_row = i
+
+                if tri_col_count == 2:
+                    actual_grid = 0
+                    for i in range(0 + (section_num * 3), 3 + (section_num * 3)):
+                        if i not in grid_found:
+                            actual_grid = i
+                            break
+
+                    if actual_grid == 0 or actual_grid == 3 or actual_grid == 6:
+                        col_num = 0
+                        row1 = self.data_array[0]
+                        row2 = self.data_array[1]
+                        row3 = self.data_array[2]
+                    elif actual_grid == 1 or actual_grid == 4 or actual_grid == 7:
+                        col_num = 3
+                        row1 = self.data_array[3]
+                        row2 = self.data_array[4]
+                        row3 = self.data_array[5]
+                    elif actual_grid == 2 or actual_grid == 5 or actual_grid == 8:
+                        col_num = 6
+                        row1 = self.data_array[6]
+                        row2 = self.data_array[7]
+                        row3 = self.data_array[8]
+
+                    num_open = 0
+                    open_indeces = []
+                    i = 0
+
+                    for value in self.grids[actual_grid][empty_row % 3]:
+                        if value == 0:
+                            num_open += 1
+                            open_indeces.append(i)
+                        i += 1
+
+                    print num_open, num, row1, row2, row3
+                    if num_open == 3:
+                        if num in row1 and num in row2:
+                            row3[empty_col] = num
+                        elif num in row1 and num in row3:
+                            row2[empty_col] = num
+                        elif num in row2 and num in row3:
+                            row1[empty_col] = num
+                    elif num_open == 2:
+                        if row1[empty_row] == 0 and row2[empty_row] == 0:
+                            if num in row1:
+                                row2[empty_row] = num
+                            elif num in row2:
+                                row1[empty_row] = num
+                        elif row1[empty_row] == 0 and row3[empty_row] == 0:
+                            if num in row1:
+                                row3[empty_row] = num
+                            elif num in row3:
+                                row1[empty_row] = num
+                        elif row2[empty_row] == 0 and row3[empty_row] == 0:
+                            if num in row2:
+                                row3[empty_row] = num
+                            elif num in row3:
+                                row2[empty_row] = num
+                    elif num_open == 1:
+                        if num not in row1:
+                            row1[empty_row] = num
+                        elif num not in row2:
+                            row2[empty_row] = num
+                        elif num not in row3:
+                            row3[empty_row] = num
+
+                if row1:
+                    self.update_array_after_row(row1, col_num)
+                    self.update_array_after_row(row2, col_num + 1)
+                    self.update_array_after_row(row3, col_num + 2)
+                    updated = True
+
     def check_columns(self):
         updated = False
 
