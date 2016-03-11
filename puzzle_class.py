@@ -73,9 +73,57 @@ class Puzzle:
                 self.add_ninth_val_in_row(column)
                 updated = True
                 self.update_array_after_columns(column, i)
+            elif column_count < 8:
+                for j in range(len(column)):
+                    if column[j] == 0:
+                        grid_num = int(j / 3) * 3 + int(i / 3)
+                        self.column_grid_compare(column, grid_num, i, j)
+                        self.update_array_after_columns(column, i)
 
         self.populate_grids()
         return updated
+
+    def column_grid_compare(self, column, grid_num, column_num, index):
+        missing = []
+
+        for value in VALID_NUMS:
+            if value not in column:
+                missing.append(value)
+
+        if len(missing) == 2:
+            grid_column = column_num % 3
+            num_empty = 0
+
+            for i in range(0,3):
+                if self.grids[grid_num][i][grid_column] == 0:
+                    num_empty += 1
+
+            if num_empty == 1:
+                if missing[0] in self.grids[grid_num][0] or missing[0] in self.grids[grid_num][1] or missing[0] in self.grids[grid_num][2]:
+                    column[index] = missing[1]
+                elif missing[1] in self.grids[grid_num][0] or missing[1] in self.grids[grid_num][1] or missing[1] in self.grids[grid_num][2]:
+                    column[index] = missing[0]
+
+    def row_grid_compare(self, row, grid_num, row_num, index):
+        missing = []
+
+        for value in VALID_NUMS:
+            if value not in row:
+                missing.append(value)
+
+        if len(missing) == 2:
+            grid_row = row_num % 3
+            num_empty = 0
+
+            for i in range(0,3):
+                if self.grids[grid_num][row_num][i] == 0:
+                    num_empty += 1
+
+            if num_empty == 1:
+                if missing[0] in self.grids[grid_num][0] or missing[0] in self.grids[grid_num][1] or missing[0] in self.grids[grid_num][2]:
+                    row[index] = missing[1]
+                elif missing[1] in self.grids[grid_num][0] or missing[1] in self.grids[grid_num][1] or missing[1] in self.grids[grid_num][2]:
+                    row[index] = missing[0]
 
     def populate_grids(self):
         k = 0
@@ -87,7 +135,7 @@ class Puzzle:
                 k += 1
 
     def add_ninth_val_in_row(self, row):
-        missing = 0
+        missing = -1
         vals_in_row = []
 
         for value in row:
@@ -99,10 +147,12 @@ class Puzzle:
                 missing = value
                 break
 
-        row[row.index(0)] = missing
+        if missing != -1:
+            row[row.index(0)] = missing
 
     def check_rows(self):
         updated = False
+        i = 0
 
         for row in self.data_array:
             row_count = 0
@@ -112,6 +162,13 @@ class Puzzle:
             if row_count == 8:
                 self.add_ninth_val_in_row(row)
                 updated = True
+            elif row_count < 8:
+                for j in range(len(row)):
+                    if row[j] == 0:
+                        grid_num = int(j / 3) * 3 + int(i / 3)
+                        self.row_grid_compare(row, grid_num, i, j)
+                        self.update_array_after_row(row, i)
+            i += 1
         self.populate_grids()
         return updated
 

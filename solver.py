@@ -34,6 +34,7 @@ def get_initial_values(puzzle):
 def main():
     puzzle = Puzzle()
     get_initial_values(puzzle)
+    i = 0
     while True:
         rows_updated = puzzle.check_rows()
         puzzle.populate_grids()
@@ -51,6 +52,7 @@ def main():
         if not rows_updated and not grids_updated:
             print 'No changes made this iteration - No solution found'
             break
+        i += 1
     puzzle.print_board()
 
 if __name__ == "__main__":
