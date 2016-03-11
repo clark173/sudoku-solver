@@ -34,9 +34,23 @@ def get_initial_values(puzzle):
 def main():
     puzzle = Puzzle()
     get_initial_values(puzzle)
-    puzzle.populate_grids()
-    puzzle.check_rows()
-    puzzle.populate_grids()
+    while True:
+        rows_updated = puzzle.check_rows()
+        puzzle.populate_grids()
+        grids_updated = puzzle.check_grids()
+        columns_updated = puzzle.check_columns()
+
+        solved = True
+        for row in puzzle.data_array:
+            if 0 in row:
+                solved = False
+                break
+        if solved:
+            print 'Solution Found'
+            break
+        if not rows_updated and not grids_updated:
+            print 'No changes made this iteration - No solution found'
+            break
     puzzle.print_board()
 
 if __name__ == "__main__":
