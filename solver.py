@@ -52,7 +52,7 @@ def main():
         grids_updated = puzzle.check_grids()
         columns_updated = puzzle.check_columns()
         hor_tri_updated = puzzle.check_horizontal_tri_grid()
-        #ver_tri_updated = puzzle.check_vertical_tri_grid()
+        ver_tri_updated = puzzle.check_vertical_tri_grid()
 
         solved = True
         for row in puzzle.data_array:

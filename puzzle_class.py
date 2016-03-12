@@ -158,10 +158,11 @@ class Puzzle:
 
                 grid_found = []
                 for i in range(0 + (section_num * 3), 3 + (section_num * 3)):
-                    if num in self.data_array[i]:
+                    column = [row[i] for row in self.data_array]
+                    if num in column:
                         tri_col_count += 1
                         not_col = i
-                        grid_num = int(i/3) + self.data_array[i].index(num) / 3
+                        grid_num = int(i/3) * 3 + column.index(num) / 3
                         grid_found.append(grid_num)
                     else:
                         empty_row = i
@@ -199,7 +200,7 @@ class Puzzle:
                             open_indeces.append(i)
                         i += 1
 
-                    print num_open, num, row1, row2, row3
+                    #print num_open, num, row1, row2, row3, actual_grid, col_num, grid_found
                     if num_open == 3:
                         if num in row1 and num in row2:
                             row3[empty_col] = num
