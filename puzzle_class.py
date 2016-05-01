@@ -1,4 +1,6 @@
+SWITCH_COLUMN = [0, 3, 6, 1, 4, 7, 2, 5, 8]
 VALID_NUMS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
 
 class Puzzle:
     def __init__(self):
@@ -35,6 +37,17 @@ class Puzzle:
 
     def update_array_after_row(self, row, num):
         self.data_array[num] = row
+
+    def update_grids(self):
+        self.grids[0] = [self.data_array[0][0:3], self.data_array[1][0:3], self.data_array[2][0:3]]
+        self.grids[1] = [self.data_array[0][3:6], self.data_array[1][3:6], self.data_array[2][3:6]]
+        self.grids[2] = [self.data_array[0][6:], self.data_array[1][6:], self.data_array[2][6:]]
+        self.grids[3] = [self.data_array[3][0:3], self.data_array[4][0:3], self.data_array[5][0:3]]
+        self.grids[4] = [self.data_array[3][3:6], self.data_array[4][3:6], self.data_array[5][3:6]]
+        self.grids[5] = [self.data_array[3][6:], self.data_array[4][6:], self.data_array[5][6:]]
+        self.grids[6] = [self.data_array[6][0:3], self.data_array[7][0:3], self.data_array[8][0:3]]
+        self.grids[7] = [self.data_array[6][3:6], self.data_array[7][3:6], self.data_array[8][3:6]]
+        self.grids[8] = [self.data_array[6][6:], self.data_array[7][6:], self.data_array[8][6:]]
 
     def check_grids(self):
         updated = False
@@ -110,6 +123,7 @@ class Puzzle:
                         i += 1
 
                     if num_open == 3:
+                        updated = True
                         if num in column1 and num in column2:
                             column3[empty_row] = num
                         elif num in column1 and num in column3:
@@ -117,6 +131,7 @@ class Puzzle:
                         elif num in column2 and num in column3:
                             column1[empty_row] = num
                     elif num_open == 2:
+                        updated = True
                         if column1[empty_row] == 0 and column2[empty_row] == 0:
                             if num in column1:
                                 column2[empty_row] = num
@@ -133,110 +148,98 @@ class Puzzle:
                             elif num in column3:
                                 column2[empty_row] = num
                     elif num_open == 1:
-                        if num not in column1:
+                        updated = True
+                        #if num not in column1:
+                        if column1[empty_row] == 0:
                             column1[empty_row] = num
-                        elif num not in column2:
+                        #elif num not in column2:
+                        elif column2[empty_row] == 0:
                             column2[empty_row] = num
-                        elif num not in column3:
+                        #elif num not in column3:
+                        elif column3[empty_row] == 0:
                             column3[empty_row] = num
                 if column1:
                     self.update_array_after_columns(column1, row_num)
                     self.update_array_after_columns(column2, row_num + 1)
                     self.update_array_after_columns(column3, row_num + 2)
-                    updated = True
         return updated
 
+    def check_correctness(self):
+        for line in self.data_array:
+            for i in range(1,10):
+                if line.count(i) > 1:
+                    print 'Invalid Board!'
+                    print 'Num: %s' % (i)
+                    self.print_board()
+                    sys.exit(1)
+
     def check_vertical_tri_grid(self):
+        updated = False
+
         for section_num in range(0,3):
             for num in VALID_NUMS:
-                tri_col_count = 0
-                not_col = 0
+                col_count = 0
                 empty_col = 0
-                row1 = None
-                row2 = None
-                row3 = None
+                full_grids = []
 
-                grid_found = []
-                for i in range(0 + (section_num * 3), 3 + (section_num * 3)):
-                    column = [row[i] for row in self.data_array]
+                for column_num in range(3*section_num, 3*section_num + 3):
+                    column = [row[column_num] for row in self.data_array]
                     if num in column:
-                        tri_col_count += 1
-                        not_col = i
-                        grid_num = int(i/3) * 3 + column.index(num) / 3
-                        grid_found.append(grid_num)
+                        col_count += 1
+                        if column.index(num) >= 6 and column.index(num) <= 8:
+                            full_grids.append(6 + (column_num / 3))
+                        elif column.index(num) >= 3 and column.index(num) <= 5:
+                            full_grids.append(3 + (column_num / 3))
+                        elif column.index(num) >= 0 and column.index(num) <= 2:
+                            full_grids.append(column_num / 3)
                     else:
-                        empty_row = i
+                        empty_col = column_num
 
-                if tri_col_count == 2:
-                    actual_grid = 0
-                    for i in range(0 + (section_num * 3), 3 + (section_num * 3)):
-                        if i not in grid_found:
-                            actual_grid = i
-                            break
+                if col_count == 2:
+                    missing_grid = 0
+                    first_col_possibility = [0,3,6]
+                    second_col_possibility = [1,4,7]
+                    third_col_possibility = [2,5,8]
 
-                    if actual_grid == 0 or actual_grid == 3 or actual_grid == 6:
-                        col_num = 0
-                        row1 = self.data_array[0]
-                        row2 = self.data_array[1]
-                        row3 = self.data_array[2]
-                    elif actual_grid == 1 or actual_grid == 4 or actual_grid == 7:
-                        col_num = 3
-                        row1 = self.data_array[3]
-                        row2 = self.data_array[4]
-                        row3 = self.data_array[5]
-                    elif actual_grid == 2 or actual_grid == 5 or actual_grid == 8:
-                        col_num = 6
-                        row1 = self.data_array[6]
-                        row2 = self.data_array[7]
-                        row3 = self.data_array[8]
+                    if full_grids[0] in first_col_possibility:
+                        for element in first_col_possibility:
+                            if element not in full_grids:
+                                missing_grid = element
+                                break
+                    elif full_grids[0] in second_col_possibility:
+                        for element in second_col_possibility:
+                            if element not in full_grids:
+                                missing_grid = element
+                    elif full_grids[0] in third_col_possibility:
+                        for element in third_col_possibility:
+                            if element not in full_grids:
+                                missing_grid = element
 
-                    num_open = 0
-                    open_indeces = []
-                    i = 0
+                    missing_col = [row[empty_col % 3] for row in self.grids[missing_grid]]
 
-                    for value in self.grids[actual_grid][empty_row % 3]:
-                        if value == 0:
-                            num_open += 1
-                            open_indeces.append(i)
-                        i += 1
-
-                    #print num_open, num, row1, row2, row3, actual_grid, col_num, grid_found
-                    if num_open == 3:
-                        if num in row1 and num in row2:
-                            row3[empty_col] = num
-                        elif num in row1 and num in row3:
+                    if missing_col.count(0) == 1:
+                        index = missing_col.index(0)
+                        missing_col[index] = num
+                        updated = True
+                        new_column = [row[empty_col] for row in self.data_array]
+                        new_column[(missing_grid / 3) * 3 + index] = num
+                        self.update_array_after_columns(new_column, empty_col)
+                    elif missing_col.count(0) == 2:
+                        index = []
+                        for lcv in range(0,3):
+                            if missing_col[lcv] == 0:
+                                index.append(lcv)
+                        row1 = self.data_array[(missing_grid / 3) * 3 + index[0]]
+                        row2 = self.data_array[(missing_grid / 3) * 3 + index[1]]
+                        if num in row1:
                             row2[empty_col] = num
-                        elif num in row2 and num in row3:
+                            updated = True
+                            self.update_array_after_row(row2, ((missing_grid / 3) * 3 + index[1]))
+                        elif num in row2:
                             row1[empty_col] = num
-                    elif num_open == 2:
-                        if row1[empty_row] == 0 and row2[empty_row] == 0:
-                            if num in row1:
-                                row2[empty_row] = num
-                            elif num in row2:
-                                row1[empty_row] = num
-                        elif row1[empty_row] == 0 and row3[empty_row] == 0:
-                            if num in row1:
-                                row3[empty_row] = num
-                            elif num in row3:
-                                row1[empty_row] = num
-                        elif row2[empty_row] == 0 and row3[empty_row] == 0:
-                            if num in row2:
-                                row3[empty_row] = num
-                            elif num in row3:
-                                row2[empty_row] = num
-                    elif num_open == 1:
-                        if num not in row1:
-                            row1[empty_row] = num
-                        elif num not in row2:
-                            row2[empty_row] = num
-                        elif num not in row3:
-                            row3[empty_row] = num
-
-                if row1:
-                    self.update_array_after_row(row1, col_num)
-                    self.update_array_after_row(row2, col_num + 1)
-                    self.update_array_after_row(row3, col_num + 2)
-                    updated = True
+                            updated = True
+                            self.update_array_after_row(row1, ((missing_grid / 3) * 3 + index[0]))
+        return updated
 
     def check_columns(self):
         updated = False
