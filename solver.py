@@ -9,16 +9,16 @@ VALID_NUMS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 def get_initial_values(puzzle):
     print 'Enter the values by row. Seperate values by comma. For empty cells, input a 0.'
 
-    puzzle.data_array[0] = [0,0,8,0,3,0,5,4,0]
-    puzzle.data_array[1] = [3,0,0,4,0,7,9,0,0]
-    puzzle.data_array[2] = [4,1,0,0,0,8,0,0,2]
-    puzzle.data_array[3] = [0,4,3,5,0,2,0,6,0]
-    puzzle.data_array[4] = [5,0,0,0,0,0,0,0,8]
-    puzzle.data_array[5] = [0,6,0,3,0,9,4,1,0]
-    puzzle.data_array[6] = [1,0,0,8,0,0,0,2,7]
-    puzzle.data_array[7] = [0,0,5,6,0,3,0,0,4]
-    puzzle.data_array[8] = [0,2,9,0,7,0,8,0,0]
-    #return
+    puzzle.data_array[0] = [7,0,1,0,0,0,0,0,0]
+    puzzle.data_array[1] = [2,0,0,0,4,6,0,0,0]
+    puzzle.data_array[2] = [0,0,0,3,5,7,0,8,0]
+    puzzle.data_array[3] = [3,0,0,5,0,0,6,9,0]
+    puzzle.data_array[4] = [9,1,0,2,0,0,7,0,0]
+    puzzle.data_array[5] = [4,0,0,0,8,0,2,0,0]
+    puzzle.data_array[6] = [0,2,0,0,0,3,0,0,0]
+    puzzle.data_array[7] = [0,0,7,0,1,0,0,0,0]
+    puzzle.data_array[8] = [8,0,0,0,0,0,0,1,0]
+    return
 
     for i in range(0,9):
         while True:

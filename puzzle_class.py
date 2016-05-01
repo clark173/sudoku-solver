@@ -247,15 +247,36 @@ class Puzzle:
         for i in range(len(self.data_array)):
             column = [row[i] for row in self.data_array]
             column_count = 0
+            contained = []
+            missing = []
             for value in column:
                 if value in VALID_NUMS:
                     column_count += 1
+                    contained.append(value)
+            for value in VALID_NUMS:
+                if value not in contained:
+                    missing.append(value)
             if column_count == 8:
                 self.add_ninth_val_in_row(column)
                 updated = True
                 self.update_array_after_columns(column, i)
             elif column_count < 8:
                 for j in range(len(column)):
+                    missing_count = 0
+                    found = []
+                    if column[j] == 0:
+                        grid_num = int(j / 3) * 3 + int(i / 3)
+                        for value in missing:
+                            if value in self.data_array[j]:
+                                missing_count += 1
+                                found.append(value)
+                            elif value in self.grids[grid_num][0] or value in self.grids[grid_num][1] or value in self.grids[grid_num][2]:
+                                missing_count += 1
+                                found.append(value)
+                        if (missing_count + 1) == len(missing):
+                            for new_value in missing:
+                                if new_value not in found:
+                                    column[j] = new_value
                     if column[j] == 0:
                         grid_num = int(j / 3) * 3 + int(i / 3)
                         self.column_grid_compare(column, grid_num, i, j)
@@ -336,15 +357,37 @@ class Puzzle:
         i = 0
 
         for row in self.data_array:
+            missing = []
+            contained = []
             row_count = 0
             for value in row:
                 if value in VALID_NUMS:
                     row_count += 1
+                    contained.append(value)
+            for value in VALID_NUMS:
+                if value not in contained:
+                    missing.append(value)
             if row_count == 8:
                 self.add_ninth_val_in_row(row)
                 updated = True
             elif row_count < 8:
                 for j in range(len(row)):
+                    missing_count = 0
+                    found = []
+                    if row[j] == 0:
+                        grid_num = int(i / 3) * 3 + int(j / 3)
+                        for value in missing:
+                            column = [line[j] for line in self.data_array]
+                            if value in column:
+                                missing_count += 1
+                                found.append(value)
+                            elif value in self.grids[grid_num][0] or value in self.grids[grid_num][1] or value in self.grids[grid_num][2]:
+                                missing_count += 1
+                                found.append(value)
+                        if (missing_count + 1) == len(missing):
+                            for new_value in missing:
+                                if new_value not in found:
+                                    row[j] = new_value
                     if row[j] == 0:
                         grid_num = int(i / 3) * 3 + int(j / 3)
                         self.row_grid_compare(row, grid_num, i, j)
